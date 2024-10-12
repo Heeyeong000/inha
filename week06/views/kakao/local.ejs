@@ -1,0 +1,104 @@
+<div>
+    <h1 class="text-center my-5" ><%=title%></h1>
+    <div class="row">
+        <div class="col-md-4 col-lg-3">
+            <form name="frm" class="input-group mb-2">
+                <input name="query" value="인하대학교" class="form-control">
+                <!-- submit은 데이터 전송(생략하면 submit 기본) / reset은 다시. 등등 -->
+                <button type="submit" class="btn btn-warning">검색</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="div_list"></div>
+    <div class="text-center">
+        <button id="prev" class="btn btn-primary px-5">이전</button>
+        <span id="page" >1</span>
+        <button id="next" class="btn btn-primary px-5">다음</button>
+    </div>
+
+
+
+    <!-- 출력 양식 설정. -->
+    <script id="temp_list" type="x-handlebars-template">
+        <table class="table table-striped table-hover">
+            {{#each documents}}
+            <tr>
+                <td>{{place_name}}</td>
+                <td>{{road_address_name}}</td>
+                <td>{{phone}}</td>
+            </tr>
+            {{/each}}
+        </table>
+    </script>
+</div>
+
+<script>
+    let query="인하대학교";
+    let page = 1;
+    let size = 10;
+
+    getList();
+
+    //id가 next일때 클릭되면 작동
+    $("#next").on("click", function(){
+        page++;
+        getList();
+    });
+
+    //id가 이전일때 클릭되면 작동
+    $("#prev").on("click", function(){
+        page--;
+        getList();
+    });
+
+
+    // frm이 submit 될때 작동되는 e(이벤트)를 받아서 prevent(막는) 내용
+    $(frm).on("submit", function(e){
+        //(화면 깜빡 방지)
+        e.preventDefault();
+        // query 변수에 벨류값 준다.
+        query=$(frm.query).val();
+        if(query==""){
+            alert("검색어를 입력하세요!");
+        }
+        else{
+            getList();
+        }
+    });
+
+    //페이지 가져오기.
+    function getList(){
+        $.ajax({
+            type:"get",
+            url:"https://dapi.kakao.com/v2/local/search/keyword.json",
+            data:{query, page, size},
+            headers:{
+                  "Authorization": "KakaoAK d5a3372b8ac78be09163c5993b64fe8c"
+              },
+            success:function(data){
+                console.log(data);
+                const temp=Handlebars.compile($("#temp_list").html());
+                $("#div_list").html(temp(data));
+
+                const last = Math.ceil(data.meta.pageable_count/size)
+                
+                // `` 백틱을 쓰면 변수로 감쌀 때 사용.
+                $("#page").html(`${page}/${last}`);
+                
+                // 1페이지일때 이전 버튼 작동 안되게 설정
+                if(page==1){
+                    $("#prev").attr("disabled", true);  
+                } else{
+                    $("#prev").attr("disabled", false);
+                }
+                // 라스트페이지일때 다음 버튼 작동 안되게
+                if(data.meta.is_end){
+                    $("#next").attr("disabled", true);
+                } else{
+                    $("#next").attr("disabled", false);
+                }
+             }
+        });
+    }
+</script>

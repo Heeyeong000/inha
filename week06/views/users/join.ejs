@@ -1,0 +1,42 @@
+<div class="row my-5 justify-content-center">
+    <div class="col-10 col-md-6 col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h3><%=title%></h3>
+            </div>
+            <div class="card-body">
+                <form name="frm">
+                    <input class="form-control mb-3" name="email" value="blue@test.com">
+                    <input class="form-control mb-3" type="password" name="pass" value="12341234">
+                    <button class="btn btn-primary w-100">회원가입</button>
+                </form>
+                <div class="text-end mt-3">
+                    <a href="/users/login">로그인</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="module">
+    // import 할거면 스크립트 타입이 모듈
+    import {app} from '/javascripts/config.js' // 파이어베이스 사용 가능
+    import {getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js"; // cdn 주소 넣음.
+    const auth=getAuth(app); // 위에서 가져온 getaurh로 앱 사용
+
+    //회원가입 버튼을 눌렀을때(submit)
+    $(frm).on("submit", function(e){
+        e.preventDefault();
+        const email=$(frm.email).val();
+        const pass=$(frm.pass).val();
+        
+        createUserWithEmailAndPassword (auth, email, pass).then(success=>{
+            // 회원가입 성공
+            alert("회원가입 성공!");
+            // 웹서버에 데이터를 저장할대 sessionStorage에 저장할 수 있음. 
+            sessionStorage.setItem("email", email)
+            location.href="/users/login";  // root page로 이동
+        }).catch(error=>{
+            alert("회원가입 실패!"+error.message);            
+        })
+    });
+</script>
