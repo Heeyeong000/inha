@@ -21,6 +21,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', require('./routes/users'));
+
 // kakao는 routes의 kakao 사용
 app.use('/kakao', require('./routes/kakao'));
 

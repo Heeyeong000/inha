@@ -17,6 +17,7 @@
         </div>
     </div>
 </div>
+
 <script type="module">
     // import 할거면 스크립트 타입이 모듈
     import {app} from '/javascripts/config.js' // 파이어베이스 사용 가능
@@ -25,21 +26,23 @@
 
     //로그인 버튼을 눌렀을때(submit)
     $(frm).on("submit", function(e){
-        e.preventDefault();
+        e.preventDefault(); // submit 을 먼저 막고 이메일, 페스워드를 가져옴.
         const email=$(frm.email).val();
         const pass=$(frm.pass).val();
-        
+
+        // 로그인 체크
         signInWithEmailAndPassword(auth, email, pass).then(success=>{
             // 로그인 성공했을 때 작동
             alert("로그인에 성공");
-            sessionStorage.setItem("email", email)
+            sessionStorage.setItem("email", email) // sessionStorage : 브라우저의 공간임
+            sessionStorage.setItem("uid", success.user.uid) // id는 특수문자때문에 데이터베이스 key 로 사용 못함.
 
-            // 웹서버에 데이터를 저장할대 sessionStorage에 저장할 수 있음. 
+            // 웹서버에 데이터를 저장할대 sessionStorage에 저장할 수 있음.
             if(sessionStorage.getItem("target")){
-                // 돌아가야 할 페이지가 있는경우
-                location.href=sessionStorage.getItem("target");
-            }else{
-                location.href="/";  // root page로 이동
+                // target에 href가 저장되어 있는 경우
+                location.href = sessionStorage.getItem("target");
+            } else{
+                location.href="/";
             }
 
         }).catch(error=>{

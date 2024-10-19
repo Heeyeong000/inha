@@ -1,5 +1,6 @@
 <div class="row">
   <h1 class="text-center my-5"><%=title%></h1>
+
   <!-- 도서 검색   !-->
   <div class="row mb-2">
     <form name="frm" class="col-6 col-md-4">
@@ -10,6 +11,7 @@
     </form>
   </div>
 
+  <!-- 검색 결과   !-->
   <div id="div_list" class="row"></div>
   <div class="text-center">
     <button id="prev" class="btn btn-primary">이전</button>
@@ -17,20 +19,21 @@
     <button id="next" class="btn btn-primary">다음</button>
   </div>
 
-  <!-- 12번 반복 !-->
+  <!-- 출력은 html에서 하고 출력 설정은 script에서. !-->
   <script id="temp_list" type="x-handlebars-template">
-    {{#each documents}}
+    {{#each documents}} <!-- 핸들바의 반복 함수.  documents는 이걸 반복하겠다는 내용!-->
     <div class="col-6 col-md-3 col-lg-2 mb-3">
         <div class="card">
 
           <div class="card-body">
             <a href="/kakao/book/info?title={{title}}&thumbnail={{thumbnail}}&price={{price}}\
             &authors={{authors}}&publisher={{publisher}}&isbn={{isbn}}&contents={{contents}}">
-            <img src="{{funThumbnail thumbnail}}" width="100%" style="cursor:pointer">
+            <img src="{{funThumbnail thumbnail}}" width="100%" style="cursor:pointer"> <!-- 밑의 스크립트의 함수 사용-->
             </a>
           </div>
 
           <div class="card-footer" style="font-size: 12px;">
+            <!-- 핸들바에선 변수사용시  중괄호 2개 사용 !-->
             <div class="ellipsis">{{title}}</div>
             <div>{{price}}원</div>
           </div>
@@ -49,10 +52,10 @@
 </div>
 
 <script>
-    let query = "자바";
-    let size=12;
-    let page =1;
-    getList();
+    let query = "자바"; // 검색어
+    let size=12;  // 몇개 출력?
+    let page =1; // page
+    getList(); // getList 함수 출력
 
     $(frm).on("submit", function (e){
       e.preventDefault();
@@ -85,9 +88,7 @@
         type:"get",
         url:"https://dapi.kakao.com/v3/search/book?target=title",
         data: {query, size:size, page:page},
-        headers:{
-          "Authorization": "KakaoAK fce5159e7d5768a57a2a9e1bf8a7ed53"
-        },
+        headers:{ "Authorization": "KakaoAK fce5159e7d5768a57a2a9e1bf8a7ed53" }, // 인증키
         success:function (data){
           console.log(data);
           const temp=Handlebars.compile($("#temp_list").html());
